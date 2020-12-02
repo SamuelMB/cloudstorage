@@ -35,4 +35,12 @@ public class FileService {
         }
         return new ArrayList<>();
     }
+
+    public File getById(Long fileId) {
+        return fileMapper.getById(fileId);
+    }
+
+    public int delete(Long fileId) {
+        return fileMapper.delete(fileId);
+    }
 }
