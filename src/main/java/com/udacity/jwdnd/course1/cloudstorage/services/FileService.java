@@ -1,5 +1,6 @@
 package com.udacity.jwdnd.course1.cloudstorage.services;
 
+import com.udacity.jwdnd.course1.cloudstorage.exception.BusinessException;
 import com.udacity.jwdnd.course1.cloudstorage.mapper.FileMapper;
 import com.udacity.jwdnd.course1.cloudstorage.model.File;
 import com.udacity.jwdnd.course1.cloudstorage.model.User;
@@ -19,13 +20,25 @@ public class FileService {
         this.userService = userService;
     }
 
-    public int upload(File file, String username) {
+    public int upload(File file, String username) throws BusinessException {
         User user = userService.getUser(username);
         if (user != null) {
             file.setUserId(user.getUserId());
+            if(fileExists(file.getFileName())) {
+               throw new BusinessException("File with this name already exists.");
+            }
             return fileMapper.insert(file);
+        } else {
+            throw new BusinessException("User not found!");
         }
-        return 0;
+    }
+
+    private boolean fileExists(String fileName) {
+        File file = fileMapper.getByName(fileName);
+        if(file == null) {
+            return false;
+        }
+        return fileName.equals(file.getFileName());
     }
 
     public List<File> getAll(String username) {

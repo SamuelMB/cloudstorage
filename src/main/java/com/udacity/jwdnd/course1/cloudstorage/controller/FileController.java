@@ -1,5 +1,6 @@
 package com.udacity.jwdnd.course1.cloudstorage.controller;
 
+import com.udacity.jwdnd.course1.cloudstorage.exception.BusinessException;
 import com.udacity.jwdnd.course1.cloudstorage.model.File;
 import com.udacity.jwdnd.course1.cloudstorage.services.FileService;
 import org.springframework.core.io.ByteArrayResource;
@@ -29,11 +30,14 @@ public class FileController {
         try {
             File newFile = new File(null, file.getOriginalFilename(), file.getContentType(), file.getSize(), null, file.getBytes());
             fileService.upload(newFile, authentication.getName());
+            redirectAttributes.addFlashAttribute("successMessage", "File uploaded!");
         } catch (IOException e) {
             e.printStackTrace();
             redirectAttributes.addFlashAttribute("errorMessage", "Error uploading file!");
+        } catch (BusinessException e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
-        redirectAttributes.addFlashAttribute("successMessage", "File uploaded!");
         return "redirect:/home";
     }
 
