@@ -1,5 +1,6 @@
 package com.udacity.jwdnd.course1.cloudstorage.controller;
 
+import com.udacity.jwdnd.course1.cloudstorage.exception.BusinessException;
 import com.udacity.jwdnd.course1.cloudstorage.model.User;
 import com.udacity.jwdnd.course1.cloudstorage.services.UserService;
 import org.springframework.stereotype.Controller;
@@ -25,7 +26,7 @@ public class SignUpController {
     }
 
     @PostMapping
-    public String signupUser(@ModelAttribute User user, Model model) {
+    public String signupUser(@ModelAttribute User user, Model model) throws BusinessException {
         String signupError = null;
 
         if(!userService.isUsernameAvailable(user.getUsername())) {
