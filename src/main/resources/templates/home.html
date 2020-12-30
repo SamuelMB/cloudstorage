@@ -83,7 +83,7 @@
                                 <tbody>
                                     <tr th:each="note : ${notes}">
                                         <td>
-                                            <button type="button" class="btn btn-success">Edit</button>
+                                            <button type="button" class="btn btn-success" th:attr="onclick=|showNoteModal('${note.noteId}', '${note.noteTitle}', '${note.noteDescription}')|" >Edit</button>
                                             <a class="btn btn-danger" th:href="@{|/notes/delete/${note.noteId}|}">Delete</a>
                                         </td>
                                         <th scope="row" th:text="${note.noteTitle}"></th>
@@ -143,7 +143,7 @@
                                 <tr th:each="credential : ${credentials}">
                                     <td>
                                         <button type="button" class="btn btn-success">Edit</button>
-                                        <a class="btn btn-danger">Delete</a>
+                                        <a class="btn btn-danger" th:href="@{|/credentials/delete/${credential.credentialId}|}">Delete</a>
                                     </td>
                                     <th scope="row" th:text="${credential.url}">Example Credential URL</th>
                                     <td th:text="${credential.username}">Example Credential Username</td>
@@ -200,6 +200,7 @@
         <script type="text/javascript">
             // For opening the note modal
             function showNoteModal(noteId, noteTitle, noteDescription) {
+                debugger
                 $('#note-id').val(noteId ? noteId : '');
                 $('#note-title').val(noteTitle ? noteTitle : '');
                 $('#note-description').val(noteDescription ? noteDescription : '');

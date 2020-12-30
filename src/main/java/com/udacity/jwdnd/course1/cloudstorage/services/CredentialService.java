@@ -44,6 +44,15 @@ public class CredentialService {
         return credentialMapper.insert(credential);
     }
 
+    public int deleteByCredentialId(Long credentialId, String username) throws BusinessException {
+        User user = userService.getUser(username);
+        if(user != null) {
+            return credentialMapper.deleteByCredentialId(credentialId);
+        } else {
+            throw new BusinessException("User not found!");
+        }
+    }
+
     public List<Credential> getAllByUsername(String username) {
         User user = userService.getUser(username);
         if(user != null) {

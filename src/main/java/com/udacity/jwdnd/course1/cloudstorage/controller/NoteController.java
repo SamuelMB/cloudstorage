@@ -22,8 +22,13 @@ public class NoteController {
     @PostMapping()
     public String createNote(@ModelAttribute Note note, Authentication authentication, RedirectAttributes redirectAttributes) {
         try {
-            noteService.createNote(note, authentication.getName());
-            redirectAttributes.addFlashAttribute("successMessage", "Note created!");
+            if(note.getNoteId() == null) {
+                noteService.createNote(note, authentication.getName());
+                redirectAttributes.addFlashAttribute("successMessage", "Note created!");
+            } else {
+                noteService.updateNote(note, authentication.getName());
+                redirectAttributes.addFlashAttribute("successMessage", "Note updated!");
+            }
         } catch (BusinessException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
