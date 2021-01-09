@@ -21,8 +21,13 @@ public class CredentialController {
     @PostMapping
     public String createCredential(@ModelAttribute Credential credential, Authentication authentication, RedirectAttributes redirectAttributes) {
         try {
-            credentialService.createCredential(credential, authentication.getName());
-            redirectAttributes.addFlashAttribute("successMessage", "Credential Created!");
+            if(credential.getCredentialId() == null) {
+                credentialService.createCredential(credential, authentication.getName());
+                redirectAttributes.addFlashAttribute("successMessage", "Credential created!");
+            } else {
+                credentialService.updateCredential(credential, authentication.getName());
+                redirectAttributes.addFlashAttribute("successMessage", "Credential updated!");
+            }
         } catch (BusinessException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }

@@ -25,7 +25,7 @@ public class UserService {
     }
 
     public int createUser(User user) throws BusinessException {
-        if(userExists(user.getUsername())) {
+        if(!userExists(user.getUsername())) {
             SecureRandom random = new SecureRandom();
             byte[] salt = new byte[16];
             random.nextBytes(salt);

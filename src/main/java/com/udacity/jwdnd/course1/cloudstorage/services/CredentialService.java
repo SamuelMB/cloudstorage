@@ -13,6 +13,7 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class CredentialService {
@@ -44,6 +45,24 @@ public class CredentialService {
         return credentialMapper.insert(credential);
     }
 
+    public int updateCredential(Credential credential, String username) throws BusinessException {
+        User user = userService.getUser(username);
+        if(user == null) {
+            throw new BusinessException("User not found!");
+        }
+        Credential credentialReturned = credentialMapper.getByCredentialId(credential.getCredentialId());
+        if(credentialReturned != null) {
+            if(!credential.getPassword().equals(credentialReturned.getPassword())) {
+                String key = generateKey();
+                String passwordEncrypted = encryptionService.encryptValue(credential.getPassword(), key);
+                credential.setKey(key);
+                credential.setPassword(passwordEncrypted);
+            }
+            return credentialMapper.update(credential);
+        }
+        throw new BusinessException("Credential not found!");
+    }
+
     public int deleteByCredentialId(Long credentialId, String username) throws BusinessException {
         User user = userService.getUser(username);
         if(user != null) {
@@ -56,7 +75,10 @@ public class CredentialService {
     public List<Credential> getAllByUsername(String username) {
         User user = userService.getUser(username);
         if(user != null) {
-            return credentialMapper.getAllByUserId(user.getUserId());
+            return credentialMapper.getAllByUserId(user.getUserId()).stream().peek(credential -> {
+                String decryptedPassword = encryptionService.decryptValue(credential.getPassword(), credential.getKey());
+                credential.setPassword(decryptedPassword);
+            }).collect(Collectors.toList());
         }
         return new ArrayList<>();
     }
