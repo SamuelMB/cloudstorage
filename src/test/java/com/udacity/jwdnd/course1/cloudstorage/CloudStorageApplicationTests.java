@@ -6,10 +6,13 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class CloudStorageApplicationTests {
@@ -51,26 +54,14 @@ class CloudStorageApplicationTests {
 	}
 
 	@Test
-	public void signUpNewUserAndLoginNewUserAndVerifyRedirectHomePageAndLogout() {
+	public void signUpNewUserAndLoginNewUserAndVerifyRedirectHomePageAndLogout() throws InterruptedException {
 		String signupUrl = "http://localhost:" + this.port + "/signup";
 		String loginUrl = "http://localhost:" + this.port + "/login";
 		String homeUrl = "http://localhost:" + this.port + "/home";
 		driver.get(signupUrl);
 
-		WebElement firstName = driver.findElement(By.name("firstName"));
-		firstName.sendKeys("User");
-
-		WebElement lastName = driver.findElement(By.name("lastName"));
-		lastName.sendKeys("Test");
-
-		WebElement username = driver.findElement(By.name("username"));
-		username.sendKeys("userTest");
-
-		WebElement password = driver.findElement(By.name("password"));
-		password.sendKeys("userTest12345");
-
-		WebElement signup = driver.findElement(By.xpath("//button[text()=\"Sign Up\"]"));
-		signup.click();
+		SignupPage signupPage = new SignupPage(driver);
+		signupPage.signup("User", "Test", "usertest", "usertest1234");
 
 		WebElement alertSuccessfulSignUp = driver.findElement(By.className("alert-dark"));
 		String successfulMessageText = alertSuccessfulSignUp.getText();
@@ -79,20 +70,28 @@ class CloudStorageApplicationTests {
 
 		driver.get(loginUrl);
 
-		WebElement usernameLogin = driver.findElement(By.name("username"));
-		usernameLogin.sendKeys("userTest");
-
-		WebElement passwordLogin = driver.findElement(By.name("password"));
-		passwordLogin.sendKeys("userTest12345");
-
-		WebElement loginButton = driver.findElement(By.xpath("//button[text()=\"Login\"]"));
-		loginButton.click();
+		LoginPage loginPage = new LoginPage(driver);
+		loginPage.login("usertest", "usertest1234");
 
 		Assertions.assertEquals(homeUrl, driver.getCurrentUrl());
 
-		WebElement logout = driver.findElement(By.xpath("//button[text()=\"Logout\"]"));
-		logout.click();
+		HomePage homePage = new HomePage(driver);
+		homePage.logout();
 
 		Assertions.assertEquals(loginUrl, driver.getCurrentUrl());
+	}
+
+	@Test
+	public void createNewNote() throws InterruptedException {
+		String loginUrl = "http://localhost:" + this.port + "/login";
+
+		driver.get(loginUrl);
+
+		LoginPage loginPage = new LoginPage(driver);
+
+		loginPage.login("usertest", "usertest1234");
+
+		NotesPage notesPage = new NotesPage(driver);
+		notesPage.createNote("Test", "This is a test");
 	}
 }
