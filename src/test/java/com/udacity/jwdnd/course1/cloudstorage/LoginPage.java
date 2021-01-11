@@ -28,9 +28,9 @@ public class LoginPage {
     public void login(String username, String password) {
         webDriverWait.until(ExpectedConditions.visibilityOf(usernameField));
         webDriverWait.until(ExpectedConditions.visibilityOf(passwordField));
-        webDriverWait.until(ExpectedConditions.visibilityOf(submitButton));
+        webDriverWait.until(ExpectedConditions.elementToBeClickable(submitButton));
         this.usernameField.sendKeys(username);
         this.passwordField.sendKeys(password);
-        this.submitButton.click();
+        this.submitButton.submit();
     }
 }

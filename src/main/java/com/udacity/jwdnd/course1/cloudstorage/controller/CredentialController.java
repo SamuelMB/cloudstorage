@@ -31,7 +31,7 @@ public class CredentialController {
         } catch (BusinessException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
-        return "redirect:/home";
+        return "redirect:/result";
     }
 
     @GetMapping("/delete/{credentialId}")
@@ -47,6 +47,6 @@ public class CredentialController {
         } catch (BusinessException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
-        return "redirect:/home";
+        return "redirect:/result";
     }
 }

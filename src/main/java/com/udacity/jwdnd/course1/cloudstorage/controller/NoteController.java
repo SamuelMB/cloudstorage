@@ -32,7 +32,7 @@ public class NoteController {
         } catch (BusinessException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
-        return "redirect:/home";
+        return "redirect:/result";
     }
 
     @GetMapping("/update/{noteId}")
@@ -49,7 +49,7 @@ public class NoteController {
             e.printStackTrace();
         }
 
-        return "redirect:/home";
+        return "redirect:/result";
     }
 
     @GetMapping("/delete/{noteId}")
@@ -65,6 +65,6 @@ public class NoteController {
         } catch (BusinessException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
-        return "redirect:/home";
+        return "redirect:/result";
     }
 }

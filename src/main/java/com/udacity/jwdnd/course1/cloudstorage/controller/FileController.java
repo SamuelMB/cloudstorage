@@ -38,7 +38,7 @@ public class FileController {
             e.printStackTrace();
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
-        return "redirect:/home";
+        return "redirect:/result";
     }
 
     @GetMapping("/download/{fileId}")
@@ -55,6 +55,6 @@ public class FileController {
         if(deleted == 1) {
             redirectAttributes.addFlashAttribute("successMessage", "File Deleted!");
         }
-        return "redirect:/home";
+        return "redirect:/result";
     }
 }
