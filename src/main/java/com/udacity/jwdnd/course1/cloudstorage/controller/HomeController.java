@@ -30,8 +30,8 @@ public class HomeController {
     public String homeView(Model model, Authentication authentication) {
         model.addAttribute("note", new Note());
         model.addAttribute("credential", new Credential());
-        model.addAttribute("files", fileService.getAll(authentication.getName()));
         try {
+            model.addAttribute("files", fileService.getAll(authentication.getName()));
             model.addAttribute("notes", noteService.getAll(authentication.getName()));
             model.addAttribute("credentials", credentialService.getAllByUsername(authentication.getName()));
         } catch (BusinessException e) {

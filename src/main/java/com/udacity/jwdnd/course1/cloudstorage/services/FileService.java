@@ -24,7 +24,7 @@ public class FileService {
         User user = userService.getUser(username);
         if (user != null) {
             file.setUserId(user.getUserId());
-            if(fileExists(file.getFileName())) {
+            if(fileExists(file.getFileName(), user.getUserId())) {
                throw new BusinessException("File with this name already exists.");
             }
             return fileMapper.insert(file);
@@ -33,8 +33,8 @@ public class FileService {
         }
     }
 
-    private boolean fileExists(String fileName) {
-        File file = fileMapper.getByName(fileName);
+    private boolean fileExists(String fileName, Long userId) {
+        File file = fileMapper.getByName(fileName, userId);
         if(file == null) {
             return false;
         }
