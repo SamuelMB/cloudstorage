@@ -23,9 +23,4 @@ public class LoginController {
         return "login";
     }
 
-    public String loginUser(@ModelAttribute User user, Model model) {
-        String loginError = null;
-
-        return "login";
-    }
 }

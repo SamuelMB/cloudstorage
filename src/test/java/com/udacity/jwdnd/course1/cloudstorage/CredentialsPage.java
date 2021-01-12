@@ -67,7 +67,6 @@ public class CredentialsPage {
         fluentWait.until(ExpectedConditions.elementToBeClickable(credentialsNavButton));
         this.javascriptExecutor.executeScript("arguments[0].click();", credentialsNavButton);
         fluentWait.until(ExpectedConditions.visibilityOf(credentialsTable));
-        fluentWait.until(ExpectedConditions.visibilityOf(credentialsTable.findElement(By.tagName("tbody")).findElement(By.tagName("tr"))));
         return credentialsTable.findElement(By.tagName("tbody")).findElements(By.tagName("tr")).stream().map(tr -> {
             List<WebElement> tds = tr.findElements(By.tagName("td"));
             Map<String, WebElement> tableItems = new HashMap<>();
@@ -90,19 +89,22 @@ public class CredentialsPage {
             fluentWait.until(ExpectedConditions.visibilityOf(credentialUsernameField));
             fluentWait.until(ExpectedConditions.visibilityOf(credentialPasswordField));
             fluentWait.until(ExpectedConditions.elementToBeClickable(saveChangesButton));
+            credentialUrlField.clear();
             credentialUrlField.sendKeys(url);
+            credentialUsernameField.clear();
             credentialUsernameField.sendKeys(username);
+            credentialPasswordField.clear();
             credentialPasswordField.sendKeys(password);
             this.javascriptExecutor.executeScript("arguments[0].click();", saveChangesButton);
         }
     }
 
-//    public void deleteLastCreatedNote() {
-//        List<Map<String, WebElement>> notes = getCredentials();
-//        Map<String, WebElement> noteToEdit = notes.get(notes.size() - 1);
-//        if(noteToEdit != null) {
-//            WebElement noteDeleteButton = noteToEdit.get("noteDeleteButton");
-//            this.javascriptExecutor.executeScript("arguments[0].click();", noteDeleteButton);
-//        }
-//    }
+    public void deleteLastCreatedNote() {
+        List<Map<String, WebElement>> credentials = getCredentials();
+        Map<String, WebElement> credentialToDelete = credentials.get(credentials.size() - 1);
+        if(credentialToDelete != null) {
+            WebElement credentialDeleteButton = credentialToDelete.get("credentialDeleteButton");
+            this.javascriptExecutor.executeScript("arguments[0].click();", credentialDeleteButton);
+        }
+    }
 }

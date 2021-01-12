@@ -51,7 +51,7 @@
                                 <tbody>
                                 <tr th:each="file : ${files}">
                                     <td>
-                                        <a target="_blank" class="btn btn-success" th:href="@{|/notes/download/${file.fileId}|}">View</a>
+                                        <a target="_blank" class="btn btn-success" th:href="@{|/files/download/${file.fileId}|}">View</a>
                                         <a class="btn btn-danger" th:href="@{|/files/delete/${file.fileId}|}">Delete</a>
                                     </td>
                                     <th scope="row" th:text="${file.fileName}"></th>
@@ -141,7 +141,7 @@
                                     </td>
                                     <th scope="row" th:text="${credential.url}">Example Credential URL</th>
                                     <td th:text="${credential.username}">Example Credential Username</td>
-                                    <td th:text="${credential.password}">Example Credential Password</td>
+                                    <td>*************</td>
                                 </tr>
                                 </tbody>
                             </table>

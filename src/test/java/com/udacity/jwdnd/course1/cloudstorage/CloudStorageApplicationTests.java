@@ -16,12 +16,22 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class CloudStorageApplicationTests {
 
 	@LocalServerPort
 	private int port;
 
 	private WebDriver driver;
+
+	private final String firstName = "firstName";
+	private final String lastName = "lastName";
+	private final String username = "username";
+	private final String password = "password";
+	private String homeUrl;
+	private String loginUrl;
+	private String signupUrl;
+	private String resultUrl;
 
 	@BeforeAll
 	static void beforeAll() {
@@ -31,6 +41,10 @@ class CloudStorageApplicationTests {
 	@BeforeEach
 	public void beforeEach() {
 		this.driver = new ChromeDriver();
+		this.homeUrl = "http://localhost:" + this.port + "/home";
+		this.loginUrl = "http://localhost:" + this.port + "/login";
+		this.signupUrl = "http://localhost:" + this.port + "/signup";
+		this.resultUrl = "http://localhost:" + this.port + "/result";
 	}
 
 	@AfterEach
@@ -40,41 +54,37 @@ class CloudStorageApplicationTests {
 		}
 	}
 
-	@Test
-	public void getLoginPage() {
-		driver.get("http://localhost:" + this.port + "/login");
-		Assertions.assertEquals("Login", driver.getTitle());
-	}
-
-	@Test
-	public void homePageRedirectsToLoginPageWhenNotLogged() {
-		String homeUrl = "http://localhost:" + this.port + "/home";
-		String loginUrl = "http://localhost:" + this.port + "/login";
-		driver.get(homeUrl);
-		Assertions.assertEquals(loginUrl, driver.getCurrentUrl());
-	}
-
-	@Test
-	public void signUpNewUserAndLoginNewUserAndVerifyRedirectHomePageAndLogout() throws InterruptedException {
-		String signupUrl = "http://localhost:" + this.port + "/signup";
-		String loginUrl = "http://localhost:" + this.port + "/login";
-		String homeUrl = "http://localhost:" + this.port + "/home";
-		driver.get(signupUrl);
-
-		SignupPage signupPage = new SignupPage(driver);
-		signupPage.signup("User", "Test", "usertest", "usertest1234");
+	private void signUp() {
+		driver.get(this.signupUrl);
+		SignupPage signupPage = new SignupPage(this.driver);
+		signupPage.signup(this.firstName, this.lastName, this.username, this.password);
 
 		WebElement alertSuccessfulSignUp = driver.findElement(By.className("alert-dark"));
 		String successfulMessageText = alertSuccessfulSignUp.getText();
 
 		Assertions.assertEquals("You successfully signed up! Please continue to the login page.", successfulMessageText);
+	}
 
-		driver.get(loginUrl);
-
+	private void login() {
+		driver.get(this.loginUrl);
 		LoginPage loginPage = new LoginPage(driver);
-		loginPage.login("usertest", "usertest1234");
+		loginPage.login(this.username, this.password);
 
-		Assertions.assertEquals(homeUrl, driver.getCurrentUrl());
+		Assertions.assertEquals(this.homeUrl, driver.getCurrentUrl());
+	}
+
+	@Test
+	@Order(1)
+	public void homePageRedirectsToLoginPageWhenNotLogged() {
+		driver.get(this.homeUrl);
+		Assertions.assertEquals(this.loginUrl, driver.getCurrentUrl());
+	}
+
+	@Test
+	@Order(2)
+	public void signUpLoginVerifyHomeLogout() throws InterruptedException {
+		signUp();
+		login();
 
 		HomePage homePage = new HomePage(driver);
 		homePage.logout();
@@ -82,22 +92,23 @@ class CloudStorageApplicationTests {
 		new WebDriverWait(driver, 10)
 				.until(ExpectedConditions.titleIs("Login"));
 
-		Assertions.assertEquals(loginUrl, driver.getCurrentUrl());
+		Assertions.assertEquals(this.loginUrl, driver.getCurrentUrl());
+
+		driver.get(this.homeUrl);
+		Assertions.assertEquals(this.loginUrl, driver.getCurrentUrl());
 	}
 
 	@Test
-	public void createNewNote() {
-		String loginUrl = "http://localhost:" + this.port + "/login";
-
-		driver.get(loginUrl);
-
-		LoginPage loginPage = new LoginPage(driver);
-
-		loginPage.login("usertest", "usertest1234");
+	@Order(3)
+	public void createNote() {
+		login();
 
 		NotesPage notesPage = new NotesPage(driver);
 		notesPage.createNote("Test", "This is a test");
 
+		Assertions.assertEquals(this.resultUrl, driver.getCurrentUrl());
+
+		driver.get(this.homeUrl);
 		List<Map<String, WebElement>> notes = notesPage.getNotes();
 
 		Map<String, WebElement> note = notes.stream().findFirst().orElse(null);
@@ -107,17 +118,16 @@ class CloudStorageApplicationTests {
 	}
 
 	@Test
+	@Order(4)
 	public void editNote() {
-		String loginUrl = "http://localhost:" + this.port + "/login";
-
-		driver.get(loginUrl);
-
-		LoginPage loginPage = new LoginPage(driver);
-
-		loginPage.login("usertest", "usertest1234");
+		login();
 
 		NotesPage notesPage = new NotesPage(driver);
 		notesPage.editLastCreatedNote("titleEdited", "descriptionEdited");
+
+		Assertions.assertEquals(this.resultUrl, driver.getCurrentUrl());
+
+		driver.get(this.homeUrl);
 
 		List<Map<String, WebElement>> notes = notesPage.getNotes();
 		List<Map<String, WebElement>> notesFinded = notes.stream().filter(note -> {
@@ -130,17 +140,16 @@ class CloudStorageApplicationTests {
 	}
 
 	@Test
+	@Order(5)
 	public void deleteNote() {
-		String loginUrl = "http://localhost:" + this.port + "/login";
-
-		driver.get(loginUrl);
-
-		LoginPage loginPage = new LoginPage(driver);
-
-		loginPage.login("usertest", "usertest1234");
+		login();
 
 		NotesPage notesPage = new NotesPage(driver);
 		notesPage.deleteLastCreatedNote();
+
+		Assertions.assertEquals(this.resultUrl, driver.getCurrentUrl());
+
+		driver.get(this.homeUrl);
 
 		List<Map<String, WebElement>> notes = notesPage.getNotes();
 		List<Map<String, WebElement>> notesFinded = notes.stream().filter(note -> {
@@ -153,17 +162,16 @@ class CloudStorageApplicationTests {
 	}
 
 	@Test
-	public void credentialCreate() {
-		String loginUrl = "http://localhost:" + this.port + "/login";
-
-		driver.get(loginUrl);
-
-		LoginPage loginPage = new LoginPage(driver);
-
-		loginPage.login("usertest", "usertest1234");
+	@Order(6)
+	public void createCredential() {
+		login();
 
 		CredentialsPage credentialsPage = new CredentialsPage(driver);
 		credentialsPage.createCredential("http://test.com/login", "testusername", "testpassword");
+
+		Assertions.assertEquals(this.resultUrl, driver.getCurrentUrl());
+
+		driver.get(this.homeUrl);
 
 		List<Map<String, WebElement>> credentials = credentialsPage.getCredentials();
 		Map<String, WebElement> credential = credentials.stream().findFirst().orElse(null);
@@ -174,17 +182,16 @@ class CloudStorageApplicationTests {
 	}
 
 	@Test
-	public void credentialEdit() {
-		String loginUrl = "http://localhost:" + this.port + "/login";
-
-		driver.get(loginUrl);
-
-		LoginPage loginPage = new LoginPage(driver);
-
-		loginPage.login("usertest", "usertest1234");
+	@Order(7)
+	public void editCredential() {
+		login();
 
 		CredentialsPage credentialsPage = new CredentialsPage(driver);
 		credentialsPage.editLastCreatedCredential("http://test.com/loginEdited", "testusernameEdited", "testpasswordEdited");
+
+		Assertions.assertEquals(this.resultUrl, driver.getCurrentUrl());
+
+		driver.get(this.homeUrl);
 
 		List<Map<String, WebElement>> credentials = credentialsPage.getCredentials();
 		List<Map<String, WebElement>> credentialsFinded = credentials.stream().filter(credential -> {
@@ -197,5 +204,30 @@ class CloudStorageApplicationTests {
 		}).collect(Collectors.toList());
 
 		Assertions.assertEquals(1, credentialsFinded.size());
+	}
+
+	@Test
+	@Order(8)
+	public void deleteCredential() {
+		login();
+
+		CredentialsPage credentialsPage = new CredentialsPage(driver);
+		credentialsPage.deleteLastCreatedNote();
+
+		Assertions.assertEquals(this.resultUrl, driver.getCurrentUrl());
+
+		driver.get(this.homeUrl);
+
+		List<Map<String, WebElement>> credentials = credentialsPage.getCredentials();
+		List<Map<String, WebElement>> credentialsFinded = credentials.stream().filter(credential -> {
+			WebElement credentialUrl = credential.get("credentialUrl");
+			WebElement credentialUsername = credential.get("credentialUsername");
+			WebElement credentialPassword = credential.get("credentialPassword");
+			return credentialUrl.getText().equals("http://test.com/loginEdited") &&
+					credentialUsername.getText().equals("testusernameEdited") &&
+					credentialPassword.getText().equals("testpasswordEdited");
+		}).collect(Collectors.toList());
+
+		Assertions.assertEquals(0, credentialsFinded.size());
 	}
 }

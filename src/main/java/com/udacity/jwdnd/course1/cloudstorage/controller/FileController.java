@@ -28,6 +28,9 @@ public class FileController {
     @PostMapping
     public String upload(@RequestParam("fileUpload") MultipartFile file, Authentication authentication, RedirectAttributes redirectAttributes) {
         try {
+            if(file.isEmpty()) {
+                throw new BusinessException("No file chosen");
+            }
             File newFile = new File(null, file.getOriginalFilename(), file.getContentType(), file.getSize(), null, file.getBytes());
             fileService.upload(newFile, authentication.getName());
             redirectAttributes.addFlashAttribute("successMessage", "File uploaded!");

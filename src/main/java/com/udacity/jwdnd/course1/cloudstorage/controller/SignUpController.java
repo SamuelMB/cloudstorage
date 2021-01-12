@@ -31,9 +31,7 @@ public class SignUpController {
 
         if(!userService.isUsernameAvailable(user.getUsername())) {
             signupError = "The username already exists.";
-        }
-
-        if(signupError == null) {
+        } else {
             int rowsAdded = userService.createUser(user);
             if(rowsAdded < 0) {
                 signupError = "There was an error signing you up. Please try again";
