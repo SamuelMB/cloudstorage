@@ -66,10 +66,7 @@ class CloudStorageApplicationTests {
 		SignupPage signupPage = new SignupPage(this.driver);
 		signupPage.signup(this.firstName, this.lastName, this.username, this.password);
 
-		WebElement alertSuccessfulSignUp = driver.findElement(By.className("alert-dark"));
-		String successfulMessageText = alertSuccessfulSignUp.getText();
-
-		Assertions.assertEquals("You successfully signed up! Please continue to the login page.", successfulMessageText);
+		Assertions.assertEquals(this.loginUrl, driver.getCurrentUrl());
 	}
 
 	private void login() {
