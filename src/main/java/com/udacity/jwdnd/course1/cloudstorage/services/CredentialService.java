@@ -75,7 +75,10 @@ public class CredentialService {
     public List<Credential> getAllByUsername(String username) {
         User user = userService.getUser(username);
         if(user != null) {
-            return credentialMapper.getAllByUserId(user.getUserId());
+            return credentialMapper.getAllByUserId(user.getUserId()).stream().peek(credential -> {
+                String decryptedPassword = encryptionService.decryptValue(credential.getPassword(), credential.getKey());
+                credential.setPassword(decryptedPassword);
+            }).collect(Collectors.toList());
         }
         return new ArrayList<>();
     }
