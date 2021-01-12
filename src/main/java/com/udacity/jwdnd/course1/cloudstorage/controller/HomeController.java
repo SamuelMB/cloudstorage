@@ -27,16 +27,12 @@ public class HomeController {
     }
 
     @GetMapping
-    public String homeView(Model model, Authentication authentication) {
+    public String homeView(Model model, Authentication authentication) throws BusinessException {
         model.addAttribute("note", new Note());
         model.addAttribute("credential", new Credential());
-        try {
-            model.addAttribute("files", fileService.getAll(authentication.getName()));
-            model.addAttribute("notes", noteService.getAll(authentication.getName()));
-            model.addAttribute("credentials", credentialService.getAllByUsername(authentication.getName()));
-        } catch (BusinessException e) {
-            model.addAttribute("errorMessage", e.getMessage());
-        }
+        model.addAttribute("files", fileService.getAll(authentication.getName()));
+        model.addAttribute("notes", noteService.getAll(authentication.getName()));
+        model.addAttribute("credentials", credentialService.getAllByUsername(authentication.getName()));
         return "home";
     }
 }

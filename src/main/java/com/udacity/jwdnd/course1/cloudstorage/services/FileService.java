@@ -4,6 +4,7 @@ import com.udacity.jwdnd.course1.cloudstorage.exception.BusinessException;
 import com.udacity.jwdnd.course1.cloudstorage.mapper.FileMapper;
 import com.udacity.jwdnd.course1.cloudstorage.model.File;
 import com.udacity.jwdnd.course1.cloudstorage.model.User;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,6 +15,9 @@ public class FileService {
 
     private final FileMapper fileMapper;
     private final UserService userService;
+
+    @Value("${spring.servlet.multipart.max-file-size}")
+    private String maxUploadSize;
 
     public FileService(FileMapper fileMapper, UserService userService) {
         this.fileMapper = fileMapper;

@@ -3,19 +3,26 @@ package com.udacity.jwdnd.course1.cloudstorage;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class CloudStorageApplicationTests {
 
@@ -75,14 +82,14 @@ class CloudStorageApplicationTests {
 
 	@Test
 	@Order(1)
-	public void homePageRedirectsToLoginPageWhenNotLogged() {
+	void homePageRedirectsToLoginPageWhenNotLogged() {
 		driver.get(this.homeUrl);
 		Assertions.assertEquals(this.loginUrl, driver.getCurrentUrl());
 	}
 
 	@Test
 	@Order(2)
-	public void signUpLoginVerifyHomeLogout() throws InterruptedException {
+	void signUpLoginVerifyHomeLogout() throws InterruptedException {
 		signUp();
 		login();
 
@@ -92,7 +99,7 @@ class CloudStorageApplicationTests {
 		new WebDriverWait(driver, 10)
 				.until(ExpectedConditions.titleIs("Login"));
 
-		Assertions.assertEquals(this.loginUrl, driver.getCurrentUrl());
+		Assertions.assertEquals(this.loginUrl + "?logout", driver.getCurrentUrl());
 
 		driver.get(this.homeUrl);
 		Assertions.assertEquals(this.loginUrl, driver.getCurrentUrl());
@@ -100,7 +107,7 @@ class CloudStorageApplicationTests {
 
 	@Test
 	@Order(3)
-	public void createNote() {
+	void createNote() {
 		login();
 
 		NotesPage notesPage = new NotesPage(driver);
@@ -119,7 +126,7 @@ class CloudStorageApplicationTests {
 
 	@Test
 	@Order(4)
-	public void editNote() {
+	void editNote() {
 		login();
 
 		NotesPage notesPage = new NotesPage(driver);
@@ -141,7 +148,7 @@ class CloudStorageApplicationTests {
 
 	@Test
 	@Order(5)
-	public void deleteNote() {
+	void deleteNote() {
 		login();
 
 		NotesPage notesPage = new NotesPage(driver);
@@ -163,7 +170,7 @@ class CloudStorageApplicationTests {
 
 	@Test
 	@Order(6)
-	public void createCredential() {
+	void createCredential() {
 		login();
 
 		CredentialsPage credentialsPage = new CredentialsPage(driver);
@@ -183,7 +190,7 @@ class CloudStorageApplicationTests {
 
 	@Test
 	@Order(7)
-	public void editCredential() {
+	void editCredential() {
 		login();
 
 		CredentialsPage credentialsPage = new CredentialsPage(driver);
@@ -208,7 +215,7 @@ class CloudStorageApplicationTests {
 
 	@Test
 	@Order(8)
-	public void deleteCredential() {
+	void deleteCredential() {
 		login();
 
 		CredentialsPage credentialsPage = new CredentialsPage(driver);

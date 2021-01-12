@@ -19,33 +19,26 @@ public class CredentialController {
     }
 
     @PostMapping
-    public String createCredential(@ModelAttribute Credential credential, Authentication authentication, RedirectAttributes redirectAttributes) {
-        try {
-            if(credential.getCredentialId() == null) {
-                credentialService.createCredential(credential, authentication.getName());
-                redirectAttributes.addFlashAttribute("successMessage", "Credential created!");
-            } else {
-                credentialService.updateCredential(credential, authentication.getName());
-                redirectAttributes.addFlashAttribute("successMessage", "Credential updated!");
-            }
-        } catch (BusinessException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+    public String createCredential(@ModelAttribute Credential credential, Authentication authentication, RedirectAttributes redirectAttributes) throws BusinessException {
+        if (credential.getCredentialId() == null) {
+            credentialService.createCredential(credential, authentication.getName());
+            redirectAttributes.addFlashAttribute("successMessage", "Credential created!");
+        } else {
+            credentialService.updateCredential(credential, authentication.getName());
+            redirectAttributes.addFlashAttribute("successMessage", "Credential updated!");
         }
+
         return "redirect:/result";
     }
 
     @GetMapping("/delete/{credentialId}")
-    public String deleteNote(@PathVariable Long credentialId, Authentication authentication, RedirectAttributes redirectAttributes) {
+    public String deleteNote(@PathVariable Long credentialId, Authentication authentication, RedirectAttributes redirectAttributes) throws BusinessException {
         String username = authentication.getName();
-        try {
-            int deleted = credentialService.deleteByCredentialId(credentialId, username);
-            if(deleted > 0) {
-                redirectAttributes.addFlashAttribute("successMessage", "Credential deleted!");
-            } else {
-                redirectAttributes.addFlashAttribute("errorMessage", "Problem when deleting credential");
-            }
-        } catch (BusinessException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        int deleted = credentialService.deleteByCredentialId(credentialId, username);
+        if (deleted > 0) {
+            redirectAttributes.addFlashAttribute("successMessage", "Credential deleted!");
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Problem when deleting credential");
         }
         return "redirect:/result";
     }

@@ -26,7 +26,7 @@ public class FileController {
     }
 
     @PostMapping
-    public String upload(@RequestParam("fileUpload") MultipartFile file, Authentication authentication, RedirectAttributes redirectAttributes) {
+    public String upload(@RequestParam("fileUpload") MultipartFile file, Authentication authentication, RedirectAttributes redirectAttributes) throws BusinessException {
         try {
             if(file.isEmpty()) {
                 throw new BusinessException("No file chosen");
@@ -37,9 +37,6 @@ public class FileController {
         } catch (IOException e) {
             e.printStackTrace();
             redirectAttributes.addFlashAttribute("errorMessage", "Error uploading file!");
-        } catch (BusinessException e) {
-            e.printStackTrace();
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
         return "redirect:/result";
     }
