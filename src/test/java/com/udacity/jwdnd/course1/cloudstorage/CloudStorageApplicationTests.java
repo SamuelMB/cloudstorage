@@ -185,7 +185,6 @@ class CloudStorageApplicationTests {
 		Assertions.assertNotNull(credential);
 		Assertions.assertEquals("http://test.com/login", credential.get("credentialUrl").getText());
 		Assertions.assertEquals("testusername", credential.get("credentialUsername").getText());
-		Assertions.assertEquals("testpassword", credential.get("credentialPassword").getText());
 	}
 
 	@Test
@@ -204,10 +203,8 @@ class CloudStorageApplicationTests {
 		List<Map<String, WebElement>> credentialsFinded = credentials.stream().filter(credential -> {
 			WebElement credentialUrl = credential.get("credentialUrl");
 			WebElement credentialUsername = credential.get("credentialUsername");
-			WebElement credentialPassword = credential.get("credentialPassword");
 			return credentialUrl.getText().equals("http://test.com/loginEdited") &&
-					credentialUsername.getText().equals("testusernameEdited") &&
-					credentialPassword.getText().equals("testpasswordEdited");
+					credentialUsername.getText().equals("testusernameEdited");
 		}).collect(Collectors.toList());
 
 		Assertions.assertEquals(1, credentialsFinded.size());
@@ -229,10 +226,8 @@ class CloudStorageApplicationTests {
 		List<Map<String, WebElement>> credentialsFinded = credentials.stream().filter(credential -> {
 			WebElement credentialUrl = credential.get("credentialUrl");
 			WebElement credentialUsername = credential.get("credentialUsername");
-			WebElement credentialPassword = credential.get("credentialPassword");
 			return credentialUrl.getText().equals("http://test.com/loginEdited") &&
-					credentialUsername.getText().equals("testusernameEdited") &&
-					credentialPassword.getText().equals("testpasswordEdited");
+					credentialUsername.getText().equals("testusernameEdited");
 		}).collect(Collectors.toList());
 
 		Assertions.assertEquals(0, credentialsFinded.size());

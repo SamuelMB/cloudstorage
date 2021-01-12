@@ -205,7 +205,15 @@
                 $('#credential-id').val(credentialId ? credentialId : '');
                 $('#credential-url').val(url ? url : '');
                 $('#credential-username').val(username ? username : '');
-                $('#credential-password').val(password ? password : '');
+                if(password) {
+                    const request = new XMLHttpRequest();
+                    request.open("GET", "/credentials/decrypt/" + credentialId);
+                    request.onload = () => {$('#credential-password').val(`${request.response}`)}
+                    request.send();
+                } else {
+                    $('#credential-password').val('')
+                }
+
                 $('#credentialModal').modal('show');
             }
         </script>

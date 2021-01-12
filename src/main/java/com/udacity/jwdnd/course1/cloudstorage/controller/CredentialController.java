@@ -31,6 +31,12 @@ public class CredentialController {
         return "redirect:/result";
     }
 
+    @GetMapping("/decrypt/{credentialId}")
+    @ResponseBody
+    public String decryptPassword(@PathVariable Integer credentialId, Authentication authentication) throws BusinessException {
+        return credentialService.decryptPassword(credentialId, authentication.getName());
+    }
+
     @GetMapping("/delete/{credentialId}")
     public String deleteNote(@PathVariable Long credentialId, Authentication authentication, RedirectAttributes redirectAttributes) throws BusinessException {
         String username = authentication.getName();

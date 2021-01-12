@@ -4,6 +4,7 @@ import com.udacity.jwdnd.course1.cloudstorage.exception.BusinessException;
 import com.udacity.jwdnd.course1.cloudstorage.mapper.CredentialMapper;
 import com.udacity.jwdnd.course1.cloudstorage.model.Credential;
 import com.udacity.jwdnd.course1.cloudstorage.model.User;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.KeyGenerator;
@@ -50,7 +51,7 @@ public class CredentialService {
         if(user == null) {
             throw new BusinessException("User not found!");
         }
-        Credential credentialReturned = credentialMapper.getByCredentialId(credential.getCredentialId());
+        Credential credentialReturned = credentialMapper.getByCredentialId(credential.getCredentialId(), user.getUserId());
         if(credentialReturned != null) {
             if(!credential.getPassword().equals(credentialReturned.getPassword())) {
                 String key = generateKey();
@@ -61,6 +62,19 @@ public class CredentialService {
             return credentialMapper.update(credential);
         }
         throw new BusinessException("Credential not found!");
+    }
+
+    public String decryptPassword(Integer credentialId, String username) throws BusinessException {
+        User user = userService.getUser(username);
+        if(user != null) {
+            Credential credential = credentialMapper.getByCredentialId(credentialId, user.getUserId());
+            if (credential == null) {
+                throw new BusinessException("Credential not Found!");
+            }
+            return encryptionService.decryptValue(credential.getPassword(), credential.getKey());
+        } else {
+            throw new BusinessException("User not found!");
+        }
     }
 
     public int deleteByCredentialId(Long credentialId, String username) throws BusinessException {
@@ -75,10 +89,7 @@ public class CredentialService {
     public List<Credential> getAllByUsername(String username) {
         User user = userService.getUser(username);
         if(user != null) {
-            return credentialMapper.getAllByUserId(user.getUserId()).stream().peek(credential -> {
-                String decryptedPassword = encryptionService.decryptValue(credential.getPassword(), credential.getKey());
-                credential.setPassword(decryptedPassword);
-            }).collect(Collectors.toList());
+            return credentialMapper.getAllByUserId(user.getUserId());
         }
         return new ArrayList<>();
     }
